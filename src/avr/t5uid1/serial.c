@@ -57,12 +57,31 @@
       AVR_SERIAL_REG(USART, CONFIG_T5UID1_SERIAL_PORT, _UDRE_vect)
 #endif
 
+static uint32_t
+t5uid1_div(uint32_t n, uint32_t d)
+{
+    uint32_t q = 0;
+    uint32_t r = 0;
+    int i;
+
+    for (i = 31; i >= 0; i--) {
+        r <<= 1;
+        r |= (n >> i) & 1;
+        if (r >= d) {
+            r -= d;
+            q |= 1UL << i;
+        }
+    }
+    return q;
+}
+
 void
 t5uid1_init(uint32_t baud)
 {
     UCSRxA = CONFIG_SERIAL_BAUD_U2X ? (1<<U2Xx) : 0;
     uint32_t cm = CONFIG_SERIAL_BAUD_U2X ? 8 : 16;
-    UBRRx = DIV_ROUND_CLOSEST(CONFIG_CLOCK_FREQ, cm * baud) - 1UL;
+    uint32_t divisor = cm * baud;
+    UBRRx = t5uid1_div(CONFIG_CLOCK_FREQ + (divisor >> 1), divisor) - 1UL;
     UCSRxC = (1<<UCSZx1) | (1<<UCSZx0);
     UCSRxB = (1<<RXENx) | (1<<TXENx) | (1<<RXCIEx) | (1<<UDRIEx);
 }
