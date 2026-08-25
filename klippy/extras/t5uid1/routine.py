@@ -80,7 +80,7 @@ class T5UID1_Routine:
 
         result = self._template.render(context).strip()
         if self.run_as_gcode and len(result) > 0:
-            self.gcode.run_script_from_command(result)
+            self.gcode.run_script(result)
 
         if not is_timer and self.interval > 0:
             if repeat:

@@ -111,7 +111,7 @@ class T5UID1_Var:
 
         result = self._template.render(context).strip()
         if self.run_as_gcode and len(result) > 0:
-            self.gcode.run_script_from_command(result)
+            self.gcode.run_script(result)
 
     def prepare_data(self):
         if self.type != "output":
