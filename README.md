@@ -18,6 +18,10 @@ the [documentation](https://www.klipper3d.org/Overview.html). We
 depend on the generous support from our
 [sponsors](https://www.klipper3d.org/Sponsors.html).
 
+Current Klipper compatibility
+
+This fork maintains the DWIN T5UID1 touchscreen support on current upstream Klipper. Compatibility fixes are applied as Klipper evolves, allowing the integrated touchscreen implementation to be used without remaining on an outdated Klipper release.
+
 ## Modifications
 
 The scope of modifications is limited to adding support for DWIN T5UID1
