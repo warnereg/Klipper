@@ -68,6 +68,25 @@ def get_duration(seconds):
         result = str(days) + "d " + result
     return result
 
+def get_time_pair(elapsed, remaining):
+    def format_time(seconds):
+        seconds = max(0, int(seconds))
+        total_minutes = seconds // 60
+        hours = total_minutes // 60
+        minutes = total_minutes % 60
+
+        if hours >= 24:
+            days = hours // 24
+            hours %= 24
+            return "%dd%dh" % (days, hours)
+
+        return "%dh%02dm" % (hours, minutes)
+
+    return "%s/%s" % (
+        format_time(elapsed),
+        format_time(remaining)
+    )
+
 def bitwise_and(lhs, rhs):
     return lhs & rhs
 
@@ -160,6 +179,7 @@ class T5UID1:
         self._routines = {}
         self._is_printing = False
         self._print_progress = 0
+        self._print_remaining = 0
         self._print_start_time = -1
         self._print_pause_time = -1
         self._print_end_time = -1
@@ -203,7 +223,8 @@ class T5UID1:
             'heater_max_temp': self.heater_max_temp,
             'probed_matrix': self.probed_matrix,
             'pid_param': self.pid_param,
-            'get_duration': get_duration
+            'get_duration': get_duration,
+            'get_time_pair': get_time_pair
         })
 
         context_routine = dict(global_context)
@@ -578,6 +599,7 @@ class T5UID1:
             'control_types': CONTROL_TYPES,
             'is_printing': self._is_printing,
             'print_progress': self._print_progress,
+            'print_remaining': self._print_remaining,
             'print_duration': max(0, print_duration)
         })
         return res
@@ -910,7 +932,13 @@ class T5UID1:
 
     def cmd_M73(self, gcmd):
         progress = gcmd.get_int('P', 0)
+        remaining = gcmd.get_int('R', -1)
+
         self._print_progress = min(100, max(0, progress))
+
+        if remaining >= 0:
+            self._print_remaining = remaining * 60
+
         if self._original_M73 is not None:
             self._original_M73(gcmd)
 
